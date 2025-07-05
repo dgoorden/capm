@@ -208,7 +208,7 @@ def plot_portfolio_pie(weights: dict, file_name="portfolio_pie.png"):
     print(f"Portfolio pie chart saved as {file_name}")
 
 # run
-asset_data = finance_download(asset_tickers + [market_ticker], "2020-01-01", "2022-12-31", ".venv/asx50_data.csv")
+asset_data = finance_download(asset_tickers + [market_ticker], "2020-01-01", "2022-12-31", "data/asx50_data.csv")
 
 weights, portfolio_perf = optimised_weights(asset_data)
 
