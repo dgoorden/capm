@@ -26,7 +26,7 @@ if st.button("Run Analysis"):
         ticker_list=asset_tickers + [market_ticker],
         start=start_date,
         end=end_date,
-        file_name=".venv/asx50_data.csv"
+        file_name="data/asx50_data.csv"
     )
     st.success("Data loaded successfully!")
 
@@ -35,14 +35,14 @@ if st.button("Run Analysis"):
     st.dataframe(capm_df)
 
     plot_sml(capm_df)
-    st.image("sml_plot.png")
+    st.image("plots/sml_plot.png")
 
     st.write("Optimising portfolio...")
     weights, perf = optimised_weights(data, min_weight=min_weight)
     weights_df = pd.DataFrame.from_dict(weights, orient="index", columns=["Weight"])
     st.dataframe(weights_df)
 
-    st.image("portfolio_pie.png")
+    st.image("plots/portfolio_pie.png")
     st.write(f"Expected return: {perf[0]:.2%}")
     st.write(f"Volatility: {perf[1]:.2%}")
     st.write(f"Sharpe ratio: {perf[2]:.2f}")
