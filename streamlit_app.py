@@ -19,6 +19,7 @@ risk_free_rate = st.sidebar.slider("Risk-free rate", 0.0, 0.1, 0.03)
 expected_market_return = st.sidebar.slider("Expected market return", 0.0, 0.15, 0.08)
 min_weight = st.sidebar.slider("Minimum asset weight", 0.0, 0.2, 0.05)
 use_cache = st.sidebar.checkbox("Use Streamlit cache (disable local CSV)", value=True)
+max_assets = st.sidebar.slider("Number of top assets to include", 3, 20, 5)
 
 # Main actions
 if st.button("Run Analysis"):
@@ -28,7 +29,7 @@ if st.button("Run Analysis"):
         start=start_date,
         end=end_date,
         file_name="data/asx50_data.csv",
-        use_cache=use_cache  # <== new
+        use_cache=use_cache
     )
     st.success("Data loaded successfully!")
 
@@ -40,11 +41,11 @@ if st.button("Run Analysis"):
     st.image("plots/sml_plot.png")
 
     st.write("Optimising portfolio...")
-    weights, perf = optimised_weights(data, min_weight=min_weight)
+    weights, perf = optimised_weights(data, max_assets=max_assets, min_weight=min_weight)
     weights_df = pd.DataFrame.from_dict(weights, orient="index", columns=["Weight"])
     st.dataframe(weights_df)
 
-    st.image("plots/portfolio_pie.png")
+    plot_portfolio_pie(weights)
     st.write(f"Expected return: {perf[0]:.2%}")
     st.write(f"Volatility: {perf[1]:.2%}")
     st.write(f"Sharpe ratio: {perf[2]:.2f}")

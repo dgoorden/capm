@@ -174,7 +174,6 @@ def optimised_weights(asset_data, max_assets=5, min_weight=0.05, risk_free_rate=
             print(f"Warning: {k} has weight {v:.2%}, below minimum 5%")
 
     performance = ef.portfolio_performance(verbose=True)
-    plot_portfolio_pie(top_weights)
 
     weights_df = pd.DataFrame.from_dict(top_weights, orient="index", columns=["Weight"])
     weights_df.to_csv("data/optimised_weights.csv")
@@ -184,21 +183,31 @@ def optimised_weights(asset_data, max_assets=5, min_weight=0.05, risk_free_rate=
     return top_weights, performance
 
 
-def plot_portfolio_pie(weights: dict, file_name="portfolio_pie.png"):
+def plot_portfolio_pie(weights: dict):
     filtered_weights = {k: v for k, v in weights.items() if v > 0.02}
     labels = list(filtered_weights.keys())
     sizes = list(filtered_weights.values())
 
-    plt.figure(figsize=(8, 8))
-    plt.pie(sizes, labels=labels, autopct="%1.1f%%", startangle=140, pctdistance=0.85)
-    plt.title("Optimised Portfolio Allocation (Top Holdings)")
-    plt.tight_layout()
-    plt.savefig(file_name, dpi=300, bbox_inches="tight")
-    plt.show()
-    print(f"Portfolio pie chart saved as {file_name}")
+    fig, ax = plt.subplots(figsize=(8, 8))
+    ax.pie(
+        sizes,
+        labels=labels,
+        autopct="%1.1f%%",
+        startangle=140,
+        pctdistance=0.85
+    )
+    ax.set_title("Optimised Portfolio Allocation (Top Holdings)")
+    st.pyplot(fig)
+    print("Portfolio pie chart displayed directly in Streamlit")
 
 
 if __name__ == "__main__":
+    import argparse
+
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--max_assets", type=int, default=5, help="Number of top assets to include in the portfolio")
+    args = parser.parse_args()
+
     start = "2020-01-01"
     end = pd.Timestamp.today().strftime("%Y-%m-%d")
     print(f"Updating data from {start} to {end}")
@@ -212,10 +221,10 @@ if __name__ == "__main__":
     )
     print("Local CSV updated successfully.")
 
-    # Run CAPM analysis locally
+    # CAPM
     capm_df = capm_analysis(data, market_ticker)
     print("CAPM results updated locally.")
 
-    # Run portfolio optimiser locally
-    weights, perf = optimised_weights(data)
+    # Portfolio optimiser
+    weights, perf = optimised_weights(data, max_assets=args.max_assets)
     print("Optimised weights updated locally.")
